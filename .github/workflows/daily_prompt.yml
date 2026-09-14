@@ -1,0 +1,26 @@
+name: daily-prompt-creator
+
+on:
+  schedule:
+    - cron: '30 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  create-prompt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create today's dated folder and prompt
+        run: |
+          TODAY=$(date +'%Y-%m-%d')
+          mkdir -p "$TODAY"
+          echo "clip_001: Maria leaps off an obsidian pillar under violet twilight, wrist blades extending, Thanos watching below in gold armor." > "$TODAY/prompt.txt"
+
+      - name: Commit and push
+        run: |
+          git config user.name "pipeline-bot"
+          git config user.email "bot@example.com"
+          git add .
+          git commit -m "Add daily prompt for $(date +'%Y-%m-%d')" || echo "Nothing to commit"
+          git push
